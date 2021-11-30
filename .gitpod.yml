@@ -12,9 +12,27 @@ tasks:
     command: docker-compose up
     openMode: split-right
   # Additional Terminals
+  - name: Laravel Sail
+    before: cd university
+    init: |
+      php -r "file_exists('.env') || copy('.env.example', '.env');"
+      composer update
+      composer install
+      php artisan key:generate
+      sail up --no-start --build
+    command: sail up
+    openMode: tab-after
 
 # Control the exposed ports
 ports:
+  - port: 7700
+    onOpen: ignore
+  - port: 8025
+    onOpen: ignore
+  - port: 1025
+    onOpen: ignore
+  - port: 6379
+    onOpen: ignore
   # MySQL
   - port: 3306
     onOpen: ignore
@@ -31,6 +49,8 @@ ports:
     onOpen: ignore
   # NGINX
   - port: 8080
+    onOpen: ignore
+  - port: 9080
     onOpen: open-preview
   # Adminer
   - port: 8033

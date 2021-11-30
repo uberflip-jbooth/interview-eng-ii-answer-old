@@ -13,3 +13,4 @@ RUN echo "database=university" >> /etc/mysql/conf.d/mysql.cnf
 
 # Install the newest version of Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+RUN echo "alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'" >> ~/.bashrc
