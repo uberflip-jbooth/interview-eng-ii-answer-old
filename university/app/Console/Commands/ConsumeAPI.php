@@ -41,51 +41,52 @@ class ConsumeAPI extends Command
      */
     public function handle()
     {
-        foreach(['Canada', 'United States'] as $country)
-        {
+        # Task: consume API and retrieve all universities in Canada and United States
+
+        # Loop for each country
+        foreach (['Canada', 'United States'] as $country) {
+            # Create endpoint URL string with country
             $endpoint = 'http://universities.hipolabs.com/search?country='.urlencode($country);
-            # Connect to the University API and search all
+
+            # Connect to the search API, tell the user what is happening
             echo "Loading $endpoint ... ";
             $response = Http::get($endpoint)->json();
-            echo "[Done]\n";
+            echo "[OK]\n";
 
             # Iterate over the response and create University models
-            $i = 0;
-            $total = count($response);
-            $step = max(100, $total / 20);
+            $i = 0; # Counter
+            $total = count($response); # Total number of records
+            $step = min(250, max(50, $total / 20)); # Step size for user feedback: 5% of total, min 50, max 250
             echo "Inserting $total records ... \n";
-            foreach($response as $record)
-            {
-                # Create the university record
+            foreach ($response as $record) {
+                # Create the University record
                 $university = University::create($record);
 
-                # Create any domain records
-                foreach($record['domains'] as $domain)
-                {
+                # Create any Domain records
+                foreach ($record['domains'] as $domain) {
                     Domain::create([
                         'university_id' => $university->id,
                         'domain_name' => $domain,
                     ]);
                 }
 
-                # Create any web page records
-                foreach($record['web_pages'] as $webpage)
-                {
+                # Create any WebPage records
+                foreach ($record['web_pages'] as $webpage) {
                     WebPage::create([
                         'university_id' => $university->id,
                         'url' => $webpage,
                     ]);
                 }
 
-                # Keep the user updated on the progress
-                if(++$i % $step == 0)
-                {
+                # If we're on a step interval, update the user on the progress
+                if (++$i % $step == 0) {
                     echo sprintf("%.0f%% completed, %d / %d\n", ($i / $total * 100), $i, $total);
                 }
             }
+
+            # Tell the user what we did
             echo "Inserted $i records. ";
-            if($i == $total)
-            {
+            if ($i == $total) {
                 echo "[OK]\n";
             } else {
                 echo "[ERROR]\n";

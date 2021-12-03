@@ -24,7 +24,7 @@ class University extends Model
     ];
 
      /**
-     * The attributes that are eager loaded
+     * The relationships that are eager loaded by default
      *
      * @var string[]
      */
@@ -35,7 +35,7 @@ class University extends Model
 
     /**
      * Define that a university can have many domains
-     * 
+     *
      */
     public function domains()
     {
@@ -44,7 +44,7 @@ class University extends Model
 
     /**
      * Define that a university can have many web pages
-     * 
+     *
      */
     public function webPages()
     {
