@@ -23,6 +23,16 @@ class University extends Model
         'name',
     ];
 
+     /**
+     * The attributes that are eager loaded
+     *
+     * @var string[]
+     */
+    protected $with = [
+        'domains',
+        'webpages',
+    ];
+
     /**
      * Define that a university can have many domains
      * 

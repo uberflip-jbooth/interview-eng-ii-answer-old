@@ -15,4 +15,4 @@ use App\Http\Controllers\UniversityController;
 */
 
 Route::get('/', [UniversityController::class, 'index']);
-Route::get('/{id}', [UniversityController::class, 'show']);
+Route::get('/{university}', [UniversityController::class, 'show']);

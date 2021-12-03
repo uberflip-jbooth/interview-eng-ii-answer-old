@@ -15,7 +15,7 @@ class UniversityController extends Controller
      */
     public function index()
     {
-        return view('university.list')->with('universities', University::with(['domains', 'web_pages'])->paginate(20));
+        return view('university.list')->with('universities', University::paginate(20));
     }
 
     /**
@@ -26,6 +26,6 @@ class UniversityController extends Controller
      */
     public function show(University $university)
     {
-        return view('university.detail', $university);
+        return view('university.detail', ['university' => $university]);
     }
 }

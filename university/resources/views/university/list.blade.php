@@ -15,14 +15,21 @@
         </tfoot>
         <tbody>
         @foreach($universities as $university)
-        {{ $university }}
             <tr>
-                <td>{{ $university['name'] }}</td>
+                <td><a href="/{{ $university['id'] }}">{{ $university['name'] }}</a></td>
                 <td>{{ $university['state-province'] }}</td>
                 <td>{{ $university['country'] }}</td>
                 <td>{{ $university['alpha_two_code'] }}</td>
-                <td>{{ 1 /*implode('<br/>', $university['domains'])*/ }}</td>
-                <td>{{ 1 /*implode('<br/>', $university['web_pages'])*/ }}</td>
+                <td>
+                    @foreach($university->domains as $domain)
+                        {{ $domain['domain_name'] }}<br/>
+                    @endforeach
+                </td>
+                <td>
+                    @foreach($university->webpages as $webpage)
+                        <a href="{{ $webpage['url'] }}">{{ $webpage['url'] }}</a><br/>
+                    @endforeach
+                </td>
             </tr>
         @endforeach
         </tbody>
