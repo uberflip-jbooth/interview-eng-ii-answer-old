@@ -15,7 +15,4 @@ use App\Http\Controllers\UniversityController;
 */
 
 Route::get('/', [UniversityController::class, 'index']);
-
-Route::get('/{id}', function ($id) {
-    return view('university.detail', UniversityController::show($id));
-});
+Route::get('/{id}', [UniversityController::class, 'show']);
