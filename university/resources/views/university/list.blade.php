@@ -15,8 +15,12 @@
         </tfoot>
         <tbody>
         @foreach($universities as $university)
-            <tr>
-                <td><a href="/{{ $university['id'] }}">{{ $university['name'] }}</a></td>
+            <tr
+            @if(count($university->domains) > 1)
+                class="bg-blue-100"
+            @endif
+            >
+                <td>{{ $university['name'] }}</td>
                 <td>{{ $university['state-province'] }}</td>
                 <td>{{ $university['country'] }}</td>
                 <td>{{ $university['alpha_two_code'] }}</td>

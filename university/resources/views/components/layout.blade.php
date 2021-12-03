@@ -4,13 +4,12 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="/css/app.css" rel="stylesheet">
-
         <title>{{ $title ?? 'University Domains List' }}</title>
-
     </head>
     <body>
-        <h1>{{ $title ?? 'University Domains List'}}</h1>
-        <hr />
-        {{ $slot }}
+        <div class="container mx-auto px-4">
+            <h1>{{ $title ?? 'University Domains List'}}</h1>
+            {{ $slot }}
+        </div>
     </body>
 </html>
