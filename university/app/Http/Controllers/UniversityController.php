@@ -17,15 +17,4 @@ class UniversityController extends Controller
     {
         return view('university.list')->with('universities', University::paginate(20));
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\University  $university
-     * @return \Illuminate\Http\Response
-     */
-    public function show(University $university)
-    {
-        return view('university.detail', ['university' => $university]);
-    }
 }

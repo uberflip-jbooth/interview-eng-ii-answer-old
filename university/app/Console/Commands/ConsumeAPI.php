@@ -43,8 +43,14 @@ class ConsumeAPI extends Command
     {
         # Task: consume API and retrieve all universities in Canada and United States
 
+        # Start timing
+        $startTime = microtime(true);
+
         # Loop for each country
         foreach (['Canada', 'United States'] as $country) {
+            # Start a timer for the loop
+            $loopStartTime = microtime(true);
+
             # Create endpoint URL string with country
             $endpoint = 'http://universities.hipolabs.com/search?country='.urlencode($country);
 
@@ -80,18 +86,21 @@ class ConsumeAPI extends Command
 
                 # If we're on a step interval, update the user on the progress
                 if (++$i % $step == 0) {
-                    echo sprintf("%.0f%% completed, %d / %d\n", ($i / $total * 100), $i, $total);
+                    printf("%.0f%% completed, %d / %d\n", ($i / $total * 100), $i, $total);
                 }
             }
 
             # Tell the user what we did
-            echo "Inserted $i records. ";
+            printf("Inserted %d records in %.2f seconds. ", $i, microtime(true) - $loopStartTime);
             if ($i == $total) {
                 echo "[OK]\n";
             } else {
                 echo "[ERROR]\n";
             }
         }
+
+        # Report execution time to the user
+        printf("Finished in %.1f seconds.\n", microtime(true) - $startTime);
 
         return Command::SUCCESS;
     }

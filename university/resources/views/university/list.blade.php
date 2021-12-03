@@ -11,10 +11,12 @@
             </tr>
         </thead>
         <tfoot>
+            <!-- Pagination -->
             <tr><td colspan="6">{{ $universities->links() }}</td></tr>
         </tfoot>
         <tbody>
         @foreach($universities as $university)
+            {{-- Add a background colour for universities with >1 domain --}}
             <tr
             @if(count($university->domains) > 1)
                 class="bg-blue-100"
