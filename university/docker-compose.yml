@@ -21,6 +21,7 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
+            - local
         depends_on:
             - redis
             - meilisearch
@@ -33,6 +34,7 @@ services:
             - 'sailredis:/data'
         networks:
             - sail
+            - local
         healthcheck:
             test: ["CMD", "redis-cli", "ping"]
             retries: 3
@@ -46,6 +48,7 @@ services:
             - 'sailmeilisearch:/data.ms'
         networks:
             - sail
+            - local
         healthcheck:
             test: ["CMD", "wget", "--no-verbose", "--spider",  "http://localhost:7700/health"]
             retries: 3
@@ -57,13 +60,17 @@ services:
             - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'
         networks:
             - sail
+            - local
     selenium:
         image: 'selenium/standalone-chrome'
         volumes:
             - '/dev/shm:/dev/shm'
         networks:
             - sail
+            - local
 networks:
+    local:
+        external: true
     sail:
         driver: bridge
 volumes:
