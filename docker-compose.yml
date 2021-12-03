@@ -59,8 +59,10 @@ services:
       - NGINX_PORT=80
     ports:
       - 8080:80
+    networks:
+      - local
 
 # Define networking
 networks:
   local:
-    driver: bridge
+    external: true

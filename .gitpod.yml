@@ -8,7 +8,9 @@ tasks:
   - name: Terminal
   # Docker terminal to run our Docker containers and let the user see the output
   - name: Docker
-    init: docker-compose up --no-start --build
+    init: |
+      docker network create local
+      docker-compose up --no-start --build
     command: docker-compose up
     openMode: split-right
   # Additional Terminals
