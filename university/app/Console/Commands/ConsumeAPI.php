@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Domain;
 use App\Models\University;
 use App\Models\WebPage;
@@ -15,7 +16,7 @@ class ConsumeAPI extends Command
      *
      * @var string
      */
-    protected $signature = 'consume:api';
+    protected $signature = 'consume:api {url=http://universities.hipolabs.com/search : API URL to consume}';
 
     /**
      * The console command description.
@@ -43,64 +44,82 @@ class ConsumeAPI extends Command
     {
         # Task: consume API and retrieve all universities in Canada and United States
 
+        # Validate that the URL is well-formatted
+        $validator = Validator::make($this->arguments(), [
+            'url' => 'required|url'
+        ]);
+        if ($validator->fails()) {
+            $this->error("URL is invalid.");
+            return Command::INVALID;
+        }
+        $url = $validator->validated()['url'];
+
+        $this->info('Using API endpoint '.$url);
+
+        # Set up list of countries
+        $countries = ['Canada', 'United States'];
+        if(env('APP_ENV') == 'testing') {
+            $countries = ['Canada'];
+        }
+
         # Start timing
         $startTime = microtime(true);
 
         # Loop for each country
-        foreach (['Canada', 'United States'] as $country) {
-            # Start a timer for the loop
-            $loopStartTime = microtime(true);
-
+        foreach ($countries as $country) {
             # Create endpoint URL string with country
-            $endpoint = 'http://universities.hipolabs.com/search?country='.urlencode($country);
+            $endpoint = $url.'?country='.urlencode($country);
 
             # Connect to the search API, tell the user what is happening
-            echo "Loading $endpoint ... ";
-            $response = Http::get($endpoint)->json();
-            echo "[OK]\n";
+            $this->info("Loading $endpoint ... ");
 
-            # Iterate over the response and create University models
-            $i = 0; # Counter
-            $total = count($response); # Total number of records
-            $step = min(250, max(50, $total / 20)); # Step size for user feedback: 5% of total, min 50, max 250
-            echo "Inserting $total records ... \n";
-            foreach ($response as $record) {
-                # Create the University record
-                $university = University::create($record);
-
-                # Create any Domain records
-                foreach ($record['domains'] as $domain) {
-                    Domain::create([
-                        'university_id' => $university->id,
-                        'domain_name' => $domain,
-                    ]);
-                }
-
-                # Create any WebPage records
-                foreach ($record['web_pages'] as $webpage) {
-                    WebPage::create([
-                        'university_id' => $university->id,
-                        'url' => $webpage,
-                    ]);
-                }
-
-                # If we're on a step interval, update the user on the progress
-                if (++$i % $step == 0) {
-                    printf("%.0f%% completed, %d / %d\n", ($i / $total * 100), $i, $total);
-                }
+            # Validate that the URL is connectable
+            try {
+                $response = Http::get($endpoint);
+            } catch(\Illuminate\Http\Client\ConnectionException $e) {
+                $this->error("Could not connect to $url");
+                return Command::FAILURE;
             }
 
-            # Tell the user what we did
-            printf("Inserted %d records in %.2f seconds. ", $i, microtime(true) - $loopStartTime);
-            if ($i == $total) {
-                echo "[OK]\n";
+            # Validate that the response was successful
+            if($response->successful()) {
+                # Process the response as JSON
+                $universities = $response->json();
+
+                # Iterate over the response and create University models
+                $bar = $this->output->createProgressBar(count($universities));
+                foreach ($universities as $record) {
+                    # Create the University record
+                    $university = University::create($record);
+
+                    # Create any Domain records
+                    foreach ($record['domains'] as $domain) {
+                        Domain::create([
+                            'university_id' => $university->id,
+                            'domain_name' => $domain,
+                        ]);
+                    }
+
+                    # Create any WebPage records
+                    foreach ($record['web_pages'] as $webpage) {
+                        WebPage::create([
+                            'university_id' => $university->id,
+                            'url' => $webpage,
+                        ]);
+                    }
+
+                    $bar->advance();
+                }
+                $bar->finish();
             } else {
-                echo "[ERROR]\n";
+                $this->error("Could not connect to $url");
+                return Command::FAILURE;
             }
+            $this->newline();
         }
 
         # Report execution time to the user
-        printf("Finished in %.1f seconds.\n", microtime(true) - $startTime);
+        $this->info(sprintf("Finished in %.1f seconds.", microtime(true) - $startTime));
 
         return Command::SUCCESS;
     }
