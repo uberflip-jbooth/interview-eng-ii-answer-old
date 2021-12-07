@@ -1,0 +1,32 @@
+@tailwind base;
+
+@layer base {
+    /* Make H1 larger and have vertical padding */
+    h1 {
+      @apply text-2xl py-5;
+    }
+    /* Give tables a border and make them full width */
+    table {
+      @apply border-collapse border-2 border-blue-900;
+      @apply w-full;
+    }
+    /* Table head/foot has a different background colour and a thicker border */
+    thead, tfoot {
+      @apply border-2 border-blue-900 bg-blue-200;
+    }
+    /* Table rows have a border */
+    tr {
+      @apply border-t border-b border-blue-500;
+    }
+    /* Table cells have a little bit of padding */
+    td, th {
+      @apply p-1;
+    }
+    /* Links have a different text colour and hover/focus underlines */
+    a {
+      @apply hover:underline focus:underline text-blue-900;
+    }
+}
+
+@tailwind components;
+@tailwind utilities;

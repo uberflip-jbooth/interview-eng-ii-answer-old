@@ -21,9 +21,16 @@ echo ""
 sudo chown -R $USER: .
 
 # Modify default .env.example to work in Gitpod
+sed -i 's/APP_NAME=.*/APP_NAME=University/' .env.example
 sed -i 's/APP_URL=.*/APP_URL="${GITPOD_WORKSPACE_URL}"/' .env.example
 sed -i '/^APP_URL/a APP_PORT=9080' .env.example
-sed -i 's/DB_HOST=.*/DB_HOST=0.0.0.0/' .env.example
+sed -i 's/DB_HOST=.*/DB_HOST=db/' .env.example
+sed -i 's/DB_USERNAME=.*/DB_USERNAME=uberflip/' .env.example
+sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=pass123/' .env.example
+
+# Modify the Sail docker-compose to work with our external network
+sed -i 's/- sail/- sail\n            - local/g' docker-compose.yml
+sed -i '/^networks:/a\    local:\n        external: true' docker-compose.yml
 
 cd ..
 
